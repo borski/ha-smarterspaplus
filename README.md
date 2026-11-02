@@ -10,6 +10,8 @@ Copy `custom_components/smarterspa` into your Home Assistant `config/custom_comp
 
 Then add the integration from Settings, Devices & Services. It asks for the email and password you used in the SmarterSpa+ app.
 
+Home Assistant saves the login in its config entry, as readable credential values. Protect the config directory and backups. Credentials don't belong in this repository or logs.
+
 ## Entities
 
 | Entity | Type | Source |
@@ -22,10 +24,12 @@ Then add the integration from Settings, Devices & Services. It asks for the emai
 | Device lights | switch | `Settings.l` |
 | Firmware | diagnostic sensor | `Pass.v` |
 | Last boot | diagnostic timestamp | `Pass.t` |
-| Service version | diagnostic sensor | last `Feed.v` reply |
+| Service version | diagnostic sensor | last `Feed.v` reply, exact component meaning unverified |
 | Check for updates | button | writes `Uc` |
 
-Polling is every 30 seconds, and every 2 seconds for about 12 seconds after any command.
+Polling is every 30 seconds, and every 2 seconds for up to 10 seconds after a command. Fast polling ends early when the inbox is empty and the requested state matches. An update check uses the full window because a cached reply can't prove a fresh response.
+
+Overlapping commands from this integration are rejected while confirmation is pending. A nonempty cloud inbox also blocks writes. This doesn't prevent another app from writing between the inbox read and PATCH. Avoid using both clients to issue commands simultaneously. A timeout doesn't prove a command failed. Check state before retrying.
 
 ## Not available over the cloud
 
@@ -35,12 +39,12 @@ Polling is every 30 seconds, and every 2 seconds for about 12 seconds after any 
 
 ## Commands
 
-Only the strings observed from the original app are ever written. They go into the document's `Input` field and the device clears it within a second.
+Only allowlisted strings from the reference are written. They go into the document's `Input` field. Observed inbox consumption was within a second, but state changes can take longer.
 
 | Action | String |
 |---|---|
 | Chlorine on | `V1.1.8.B+` |
-| Chlorine off | `B-` |
+| Chlorine off | `V1.1.8.B-` |
 | Lights on / off | `L+` / `L-` |
 | Power level n | `V1.1.8.P+n/` |
 | Zero point n | `Zzn/` |

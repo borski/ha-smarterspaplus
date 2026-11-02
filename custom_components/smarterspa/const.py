@@ -27,7 +27,7 @@ def document_url(uid: str) -> str:
 # Polling. Reference 3.5 says allow up to 10 s for a command to land.
 NORMAL_INTERVAL = timedelta(seconds=30)
 FAST_INTERVAL = timedelta(seconds=2)
-FAST_WINDOW = timedelta(seconds=12)
+FAST_WINDOW = timedelta(seconds=10)
 
 # Refresh the ID token when this much of its hour is left.
 TOKEN_REFRESH_MARGIN = timedelta(minutes=5)
@@ -35,25 +35,35 @@ TOKEN_REFRESH_MARGIN = timedelta(minutes=5)
 # Reference 3.5. Exact strings as captured. Do not add to this list
 # without a captured observation in the reference.
 CMD_CHLORINE_ON = "V1.1.8.B+"
-CMD_CHLORINE_OFF = "B-"
+CMD_CHLORINE_OFF = "V1.1.8.B-"
 CMD_LIGHTS_ON = "L+"
 CMD_LIGHTS_OFF = "L-"
 CMD_UPDATE_CHECK = "Uc"
 
 
 def cmd_power_level(level: int) -> str:
-    if not 1 <= level <= 10:
+    if type(level) is not int or not 1 <= level <= 10:
         raise ValueError("power level must be 1..10")
     return f"V1.1.8.P+{level}/"
 
 
 def cmd_zero_point(value: int) -> str:
-    if not 10 <= value <= 150:
+    if type(value) is not int or not 10 <= value <= 150:
         raise ValueError("zero point must be 10..150")
     return f"Zz{value}/"
 
 
 # Reference 3.3. Salt status codes. Only 0 and 1 are verified.
+COMMAND_TARGETS = {
+    CMD_CHLORINE_ON: ("Main", "g", 1),
+    CMD_CHLORINE_OFF: ("Main", "g", 0),
+    CMD_LIGHTS_ON: ("Settings", "l", 1),
+    CMD_LIGHTS_OFF: ("Settings", "l", 0),
+    **{cmd_power_level(n): ("Main", "p", n) for n in range(1, 11)},
+    **{cmd_zero_point(n): ("Settings", "z", n) for n in range(10, 151)},
+}
+ALLOWED_COMMANDS = frozenset(COMMAND_TARGETS) | {CMD_UPDATE_CHECK}
+
 SALT_STATUS = {0: "ok", 1: "low"}
 
 CONF_UID = "uid"

@@ -4,10 +4,12 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from dataclasses import dataclass
+import math
 
 from homeassistant.components.number import NumberEntity, NumberEntityDescription, NumberMode
 from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from . import SmarterSpaConfigEntry
@@ -74,4 +76,6 @@ class SmarterSpaNumber(SmarterSpaEntity, NumberEntity):
         return None if value is None else float(value)
 
     async def async_set_native_value(self, value: float) -> None:
-        await self.coordinator.async_send_command(self.entity_description.command_fn(int(round(value))))
+        if not math.isfinite(value) or value != int(value):
+            raise HomeAssistantError("SmarterSpa settings require a whole number")
+        await self.coordinator.async_send_command(self.entity_description.command_fn(int(value)))

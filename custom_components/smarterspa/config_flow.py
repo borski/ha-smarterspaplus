@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
+import aiohttp
 import voluptuous as vol
 
 from homeassistant.config_entries import ConfigFlow, ConfigFlowResult
@@ -35,7 +36,7 @@ class SmarterSpaConfigFlow(ConfigFlow, domain=DOMAIN):
                 doc = await client.get_document()
             except SmarterSpaAuthError:
                 errors["base"] = "invalid_auth"
-            except SmarterSpaApiError:
+            except (SmarterSpaApiError, aiohttp.ClientError, TimeoutError):
                 errors["base"] = "cannot_connect"
             else:
                 device_id = str((doc.get("Pass") or {}).get("m") or uid)
@@ -59,7 +60,7 @@ class SmarterSpaConfigFlow(ConfigFlow, domain=DOMAIN):
                 await client.sign_in()
             except SmarterSpaAuthError:
                 errors["base"] = "invalid_auth"
-            except SmarterSpaApiError:
+            except (SmarterSpaApiError, aiohttp.ClientError, TimeoutError):
                 errors["base"] = "cannot_connect"
             else:
                 return self.async_update_reload_and_abort(

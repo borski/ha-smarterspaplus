@@ -13,7 +13,7 @@ from typing import Any
 
 import aiohttp
 
-from .const import REFRESH_URL, SIGNIN_URL, TOKEN_REFRESH_MARGIN, document_url
+from .const import ALLOWED_COMMANDS, REFRESH_URL, SIGNIN_URL, TOKEN_REFRESH_MARGIN, document_url
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -151,6 +151,8 @@ class SmarterSpaClient:
 
     async def send_command(self, command: str) -> None:
         """Reference 3.5. PATCH only the Input field."""
+        if command not in ALLOWED_COMMANDS:
+            raise ValueError("Unsupported SmarterSpa command")
         if not self.uid:
             await self.sign_in()
         assert self.uid is not None
