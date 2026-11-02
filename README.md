@@ -1,0 +1,51 @@
+# SmarterSpa+ for Home Assistant
+
+Home Assistant integration for the ControlOMatic SmarterSpa+ saltwater chlorinator. ControlOMatic is out of business and the official app is gone from both app stores. The device still talks to its Firebase backend, and so does this integration.
+
+Cloud polling only. No Bluetooth.
+
+## Install
+
+Copy `custom_components/smarterspa` into your Home Assistant `config/custom_components/` directory and restart. Or add this repository to HACS as a custom integration.
+
+Then add the integration from Settings, Devices & Services. It asks for the email and password you used in the SmarterSpa+ app.
+
+## Entities
+
+| Entity | Type | Source |
+|---|---|---|
+| Power level | sensor and number (1 to 10) | `Main.p` |
+| Salt status | sensor, OK or Low | `Main.s` |
+| Electrode life remaining | sensor, percent | 100 minus `Main.e` |
+| Zero point | sensor and number (10 to 150) | `Settings.z` |
+| Chlorine generation | switch | `Main.g` |
+| Device lights | switch | `Settings.l` |
+| Firmware | diagnostic sensor | `Pass.v` |
+| Last boot | diagnostic timestamp | `Pass.t` |
+| Service version | diagnostic sensor | last `Feed.v` reply |
+| Check for updates | button | writes `Uc` |
+
+Polling is every 30 seconds, and every 2 seconds for about 12 seconds after any command.
+
+## Not available over the cloud
+
+- Chlorine sensor millivolts. The device never publishes them to Firestore.
+- Online or offline state. Nothing in the document changes while the device idles.
+- Salt status codes other than 0 and 1. Unmapped codes show as unknown with the raw code in an attribute.
+
+## Commands
+
+Only the strings observed from the original app are ever written. They go into the document's `Input` field and the device clears it within a second.
+
+| Action | String |
+|---|---|
+| Chlorine on | `V1.1.8.B+` |
+| Chlorine off | `B-` |
+| Lights on / off | `L+` / `L-` |
+| Power level n | `V1.1.8.P+n/` |
+| Zero point n | `Zzn/` |
+| Update check | `Uc` |
+
+## Longevity
+
+The Firebase project runs on the defunct company's Google Cloud billing. If that lapses, sign-in and reads start failing and this integration goes unavailable. The device keeps chlorinating on its own regardless.

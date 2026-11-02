@@ -1,0 +1,53 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "SmarterSpa+ account",
+        "description": "Sign in with the same email and password you used in the SmarterSpa+ app.",
+        "data": {
+          "email": "Email",
+          "password": "Password"
+        }
+      },
+      "reauth_confirm": {
+        "title": "Re-enter SmarterSpa+ password",
+        "data": {
+          "password": "Password"
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "Sign-in rejected. Check the email and password.",
+      "cannot_connect": "Signed in, but the device document could not be read."
+    },
+    "abort": {
+      "already_configured": "This SmarterSpa+ is already set up.",
+      "reauth_successful": "Password updated."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "power_level": { "name": "Power level" },
+      "salt_status": {
+        "name": "Salt status",
+        "state": { "ok": "OK", "low": "Low" }
+      },
+      "electrode_life": { "name": "Electrode life remaining" },
+      "zero_point": { "name": "Zero point" },
+      "firmware": { "name": "Firmware" },
+      "last_boot": { "name": "Last boot" },
+      "service_version": { "name": "Service version" }
+    },
+    "switch": {
+      "chlorine": { "name": "Chlorine generation" },
+      "lights": { "name": "Device lights" }
+    },
+    "number": {
+      "power_level_control": { "name": "Power level" },
+      "zero_point_control": { "name": "Zero point" }
+    },
+    "button": {
+      "check_updates": { "name": "Check for updates" }
+    }
+  }
+}
