@@ -6,11 +6,31 @@ Cloud polling only. No Bluetooth.
 
 ## Install
 
-Copy `custom_components/smarterspa` into your Home Assistant `config/custom_components/` directory and restart. Or add this repository to HACS as a custom integration.
+Requires Home Assistant 2026.10.1 or newer. That's the oldest version tested.
+
+### HACS custom repository
+
+1. Open HACS, then its menu, then **Custom repositories**.
+2. Add `https://github.com/borski/ha-smarterspaplus` with type **Integration**.
+3. Find **SmarterSpa+** in HACS and download it.
+4. Restart Home Assistant.
+5. Open **Settings > Devices & services > Add integration** and select **SmarterSpa+**.
+
+The GitHub repository must be public and contain the integration files before installation works. This is a custom repository, not a HACS default-store listing.
+
+### Manual installation
+
+Copy `custom_components/smarterspa` into your Home Assistant `config/custom_components/` directory and restart.
 
 Then add the integration from Settings, Devices & Services. It asks for the email and password you used in the SmarterSpa+ app.
 
 Home Assistant saves the login in its config entry, as readable credential values. Protect the config directory and backups. Credentials don't belong in this repository or logs.
+
+### Updates and validation
+
+HACS can install from the default branch without a release archive. For versioned updates, publish a GitHub release whose tag matches the integration's `manifest.json` version. Restart HA after an integration update.
+
+GitHub Actions runs HACS validation and Home Assistant's hassfest after pushes and pull requests. The repository needs a description, topics, and enabled issues on GitHub. License validation is deliberately excluded until a license is selected. Default-store submission is a separate step.
 
 ## Entities
 
