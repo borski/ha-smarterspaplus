@@ -32,7 +32,6 @@ from homeassistant.const import (
     SIGNAL_STRENGTH_DECIBELS_MILLIWATT,
     EntityCategory,
     UnitOfElectricCurrent,
-    UnitOfTemperature,
     UnitOfTime,
 )
 from homeassistant.exceptions import HomeAssistantError
@@ -42,8 +41,8 @@ from .entity import SmarterSpaEntity
 from .local_coordinator import SmarterSpaLocalCoordinator
 
 SALT_OPTIONS = ["low", "ok", "high", "shutdown", "unknown"]
-PHASE_OPTIONS = ["starting", "switching", "settling", "generating", "idle", "fault"]
-STOP_OPTIONS = ["completed", "manual", "overcurrent", "comm_lost"]
+PHASE_OPTIONS = ["starting", "switching", "settling", "generating", "sampling", "idle", "fault"]
+STOP_OPTIONS = ["completed", "target_reached", "manual", "overcurrent", "comm_lost"]
 
 State = dict[str, Any]
 
@@ -113,10 +112,12 @@ SENSORS: tuple[LocalSensorDescription, ...] = (
         state_class=SensorStateClass.MEASUREMENT, value_fn=_get("sensor"),
     ),
     LocalSensorDescription(
-        key="board_temperature", translation_key="board_temperature",
-        device_class=SensorDeviceClass.TEMPERATURE,
-        native_unit_of_measurement=UnitOfTemperature.FAHRENHEIT,
-        state_class=SensorStateClass.MEASUREMENT, value_fn=_get("board_temperature_f"),
+        key="last_check", translation_key="last_check", icon="mdi:flask-round-bottom-outline",
+        state_class=SensorStateClass.MEASUREMENT, value_fn=_get("last_check"),
+    ),
+    LocalSensorDescription(
+        key="target_point", translation_key="target_point", icon="mdi:arrow-collapse-up",
+        entity_category=EntityCategory.DIAGNOSTIC, value_fn=_get("target_point"),
     ),
     LocalSensorDescription(
         key="cycle_phase", translation_key="cycle_phase", icon="mdi:state-machine",
@@ -237,6 +238,13 @@ SWITCHES: tuple[LocalSwitchDescription, ...] = (
         value_fn=_get("auto"),
         on=("update_settings", {"auto": True}), off=("update_settings", {"auto": False}),
     ),
+    LocalSwitchDescription(
+        # On: run until the sensor confirms recovery. Off: the original fixed run time.
+        key="measured", translation_key="measured", icon="mdi:flask-outline",
+        entity_category=EntityCategory.CONFIG,
+        value_fn=lambda c: None if not c.data else c.data.get("mode") == "measured",
+        on=("update_settings", {"mode": "measured"}), off=("update_settings", {"mode": "timed"}),
+    ),
 )
 
 
@@ -276,6 +284,11 @@ NUMBERS: tuple[LocalNumberDescription, ...] = (
         key="zero_point", translation_key="zero_point_control", icon="mdi:target",
         native_min_value=10, native_max_value=150, native_step=1, mode=NumberMode.SLIDER,
         entity_category=EntityCategory.CONFIG, field="zero_point",
+    ),
+    LocalNumberDescription(
+        key="target_margin", translation_key="target_margin", icon="mdi:arrow-expand-up",
+        native_min_value=1, native_max_value=60, native_step=1, mode=NumberMode.BOX,
+        entity_category=EntityCategory.CONFIG, field="target_margin",
     ),
 )
 

@@ -61,8 +61,9 @@ async def test_entities_and_values(hass: HomeAssistant, controller: Controller) 
     assert hass.states.get("sensor.smarterspa_power_level").state == "3"
     assert hass.states.get("sensor.smarterspa_salt_status").state == "unknown"
     assert hass.states.get("sensor.smarterspa_electrode_life_remaining").state == "100"
-    # The test instance is metric. 102 °F from the board shows as 38.9 °C.
-    assert round(float(hass.states.get("sensor.smarterspa_board_temperature").state), 1) == 38.9
+    assert hass.states.get("sensor.smarterspa_board_temperature") is None
+    assert hass.states.get("switch.smarterspa_measured_dosing").state == "off"
+    assert hass.states.get("sensor.smarterspa_electrode_current").state == "unknown"
     assert hass.states.get("sensor.smarterspa_cycle_phase").state == "idle"
     assert hass.states.get("binary_sensor.smarterspa_power_board").state == "on"
     assert hass.states.get("binary_sensor.smarterspa_generating").state == "off"
@@ -107,6 +108,16 @@ async def test_commands_reach_the_controller(hass: HomeAssistant, controller: Co
         "switch", "turn_off", {"entity_id": "switch.smarterspa_device_lights"}, blocking=True
     )
     assert engine.settings.lights is False
+
+    await hass.services.async_call(
+        "switch", "turn_on", {"entity_id": "switch.smarterspa_measured_dosing"}, blocking=True
+    )
+    assert engine.settings.mode.value == "measured"
+    await hass.services.async_call(
+        "number", "set_value", {"entity_id": "number.smarterspa_target_above_zero_point", "value": 8},
+        blocking=True,
+    )
+    assert engine.settings.target_margin == 8
 
     engine.electrode_seconds = 10_000_000
     await hass.services.async_call(

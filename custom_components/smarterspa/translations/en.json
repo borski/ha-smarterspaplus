@@ -114,9 +114,6 @@
       "chlorine_sensor": {
         "name": "Chlorine sensor"
       },
-      "board_temperature": {
-        "name": "Board temperature"
-      },
       "cycle_phase": {
         "name": "Cycle phase",
         "state": {
@@ -125,7 +122,8 @@
           "settling": "Settling",
           "generating": "Generating",
           "idle": "Idle",
-          "fault": "Fault"
+          "fault": "Fault",
+          "sampling": "Checking chlorine"
         }
       },
       "cycle_remaining": {
@@ -143,7 +141,8 @@
           "completed": "Completed",
           "manual": "Stopped manually",
           "overcurrent": "Overcurrent",
-          "comm_lost": "Power board lost"
+          "comm_lost": "Power board lost",
+          "target_reached": "Target reached"
         }
       },
       "comm_failures": {
@@ -151,6 +150,12 @@
       },
       "wifi_signal": {
         "name": "Wi-Fi signal"
+      },
+      "last_check": {
+        "name": "Last mid-cycle check"
+      },
+      "target_point": {
+        "name": "Measured dosing target"
       }
     },
     "switch": {
@@ -162,6 +167,9 @@
       },
       "auto": {
         "name": "Automatic chlorination"
+      },
+      "measured": {
+        "name": "Measured dosing"
       }
     },
     "number": {
@@ -170,6 +178,9 @@
       },
       "zero_point_control": {
         "name": "Zero point"
+      },
+      "target_margin": {
+        "name": "Target above zero point"
       }
     },
     "button": {
