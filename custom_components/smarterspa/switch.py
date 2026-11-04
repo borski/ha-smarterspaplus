@@ -9,7 +9,7 @@ from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from . import SmarterSpaConfigEntry
+from . import SmarterSpaConfigEntry, is_local, local_entities
 from .const import CMD_CHLORINE_OFF, CMD_CHLORINE_ON, CMD_LIGHTS_OFF, CMD_LIGHTS_ON
 from .coordinator import SmarterSpaCoordinator
 from .entity import SmarterSpaEntity
@@ -42,6 +42,9 @@ async def async_setup_entry(
     hass: HomeAssistant, entry: SmarterSpaConfigEntry, async_add_entities: AddEntitiesCallback
 ) -> None:
     coordinator = entry.runtime_data
+    if is_local(entry):
+        async_add_entities(local_entities.LocalSwitch(coordinator, d) for d in local_entities.SWITCHES)
+        return
     async_add_entities(SmarterSpaSwitch(coordinator, *spec) for spec in SWITCHES)
 
 

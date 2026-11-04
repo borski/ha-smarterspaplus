@@ -12,7 +12,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from . import SmarterSpaConfigEntry
+from . import SmarterSpaConfigEntry, is_local, local_entities
 from .const import cmd_power_level, cmd_zero_point
 from .coordinator import SmarterSpaCoordinator
 from .entity import SmarterSpaEntity
@@ -58,6 +58,9 @@ async def async_setup_entry(
     hass: HomeAssistant, entry: SmarterSpaConfigEntry, async_add_entities: AddEntitiesCallback
 ) -> None:
     coordinator = entry.runtime_data
+    if is_local(entry):
+        async_add_entities(local_entities.LocalNumber(coordinator, d) for d in local_entities.NUMBERS)
+        return
     async_add_entities(SmarterSpaNumber(coordinator, d) for d in NUMBERS)
 
 

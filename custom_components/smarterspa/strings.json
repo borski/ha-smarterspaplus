@@ -2,6 +2,14 @@
   "config": {
     "step": {
       "user": {
+        "title": "Connect to SmarterSpa+",
+        "description": "Local talks directly to a unit running the replacement controller. Cloud uses the original vendor's servers.",
+        "menu_options": {
+          "local": "Local controller",
+          "cloud": "Vendor cloud account"
+        }
+      },
+      "cloud": {
         "title": "SmarterSpa+ account",
         "description": "Sign in with the same email and password you used in the SmarterSpa+ app.",
         "data": {
@@ -9,45 +17,185 @@
           "password": "Password"
         }
       },
-      "reauth_confirm": {
-        "title": "Re-enter SmarterSpa+ password",
+      "local": {
+        "title": "SmarterSpa+ local controller",
         "data": {
+          "host": "Host",
+          "port": "Port",
+          "token": "API token"
+        },
+        "data_description": {
+          "host": "Address of the SmarterSpa+ unit, for example 192.168.1.50 or ss-plus.local",
+          "token": "From token in /etc/smarterspa/config.toml on the unit"
+        }
+      },
+      "reconfigure": {
+        "title": "Change connection",
+        "description": "Switching keeps this device's entities and their history.",
+        "menu_options": {
+          "reconfigure_local": "Use the local controller",
+          "reconfigure_cloud": "Use the vendor cloud"
+        }
+      },
+      "reconfigure_local": {
+        "title": "SmarterSpa+ local controller",
+        "data": {
+          "host": "Host",
+          "port": "Port",
+          "token": "API token"
+        },
+        "data_description": {
+          "host": "Address of the SmarterSpa+ unit, for example 192.168.1.50 or ss-plus.local",
+          "token": "From token in /etc/smarterspa/config.toml on the unit"
+        }
+      },
+      "reconfigure_cloud": {
+        "title": "SmarterSpa+ account",
+        "data": {
+          "email": "Email",
           "password": "Password"
+        }
+      },
+      "reauth_confirm": {
+        "title": "Re-authenticate SmarterSpa+",
+        "description": "Enter the new {what}.",
+        "data": {
+          "password": "Password",
+          "token": "API token"
         }
       }
     },
     "error": {
       "invalid_auth": "Sign-in rejected. Check the email and password.",
-      "cannot_connect": "Signed in, but the device document could not be read."
+      "cannot_connect": "Signed in, but the device document could not be read.",
+      "invalid_token": "The controller rejected the API token.",
+      "cannot_connect_local": "Couldn't reach the controller at that address and port.",
+      "not_a_controller": "Something answered, but it isn't a SmarterSpa+ local controller."
     },
     "abort": {
       "already_configured": "This SmarterSpa+ is already set up.",
-      "reauth_successful": "Password updated."
+      "reauth_successful": "Password updated.",
+      "reconfigure_successful": "Connection updated."
     }
   },
   "entity": {
     "sensor": {
-      "power_level": { "name": "Power level" },
+      "power_level": {
+        "name": "Power level"
+      },
       "salt_status": {
         "name": "Salt status",
-        "state": { "ok": "OK", "low": "Low" }
+        "state": {
+          "low": "Low",
+          "ok": "OK",
+          "high": "High",
+          "shutdown": "Overcurrent shutdown",
+          "unknown": "Unknown"
+        }
       },
-      "electrode_life": { "name": "Electrode life remaining" },
-      "zero_point": { "name": "Zero point" },
-      "firmware": { "name": "Firmware" },
-      "last_boot": { "name": "Last boot" },
-      "service_version": { "name": "Service version" }
+      "electrode_life": {
+        "name": "Electrode life remaining"
+      },
+      "zero_point": {
+        "name": "Zero point"
+      },
+      "firmware": {
+        "name": "Firmware"
+      },
+      "last_boot": {
+        "name": "Last boot"
+      },
+      "service_version": {
+        "name": "Service version"
+      },
+      "electrode_current": {
+        "name": "Electrode current"
+      },
+      "chlorine_sensor": {
+        "name": "Chlorine sensor"
+      },
+      "board_temperature": {
+        "name": "Board temperature"
+      },
+      "cycle_phase": {
+        "name": "Cycle phase",
+        "state": {
+          "starting": "Starting",
+          "switching": "Switching polarity",
+          "settling": "Settling",
+          "generating": "Generating",
+          "idle": "Idle",
+          "fault": "Fault"
+        }
+      },
+      "cycle_remaining": {
+        "name": "Cycle time remaining"
+      },
+      "lockout_remaining": {
+        "name": "Automatic start lockout"
+      },
+      "electrode_hours": {
+        "name": "Electrode hours"
+      },
+      "last_stop": {
+        "name": "Last cycle end",
+        "state": {
+          "completed": "Completed",
+          "manual": "Stopped manually",
+          "overcurrent": "Overcurrent",
+          "comm_lost": "Power board lost"
+        }
+      },
+      "comm_failures": {
+        "name": "Power board missed replies"
+      },
+      "wifi_signal": {
+        "name": "Wi-Fi signal"
+      }
     },
     "switch": {
-      "chlorine": { "name": "Chlorine generation" },
-      "lights": { "name": "Device lights" }
+      "chlorine": {
+        "name": "Chlorine generation"
+      },
+      "lights": {
+        "name": "Device lights"
+      },
+      "auto": {
+        "name": "Automatic chlorination"
+      }
     },
     "number": {
-      "power_level_control": { "name": "Power level" },
-      "zero_point_control": { "name": "Zero point" }
+      "power_level_control": {
+        "name": "Power level"
+      },
+      "zero_point_control": {
+        "name": "Zero point"
+      }
     },
     "button": {
-      "check_updates": { "name": "Check for updates" }
+      "check_updates": {
+        "name": "Check for updates"
+      },
+      "reset_electrode": {
+        "name": "Reset electrode life"
+      },
+      "reboot": {
+        "name": "Reboot"
+      }
+    },
+    "binary_sensor": {
+      "generating": {
+        "name": "Generating"
+      },
+      "fault": {
+        "name": "Overcurrent fault"
+      },
+      "board_connected": {
+        "name": "Power board"
+      },
+      "internet": {
+        "name": "Internet"
+      }
     }
   }
 }

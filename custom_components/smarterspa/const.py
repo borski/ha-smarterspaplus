@@ -1,7 +1,8 @@
 """Constants for the SmarterSpa+ integration.
 
-Cloud configuration and commands observed from the original SmarterSpa+ app.
-Only verified command strings are sent to the device.
+Two connection modes. Cloud talks to the original vendor's Firebase backend
+with command strings observed from the app. Local talks to the replacement
+controller (smarterspa-local) over its REST API and event stream.
 """
 
 from __future__ import annotations
@@ -53,7 +54,11 @@ def cmd_zero_point(value: int) -> str:
     return f"Zz{value}/"
 
 
-# Reference 3.3. Salt status codes. Only 0 and 1 are verified.
+# Salt status codes from the original controller's source (cgsupport.operation):
+# electrode current under 1.0 A is 0 (low, red LED), 1.0 to 2.0 A is 1 (ok,
+# blue), over 2.0 A is 2 (high, green), overcurrent shutdown is 3, and 4 means
+# no cycle has run since boot. The first version of this map had 0 and 1
+# swapped, based on the app's labels.
 COMMAND_TARGETS = {
     CMD_CHLORINE_ON: ("Main", "g", 1),
     CMD_CHLORINE_OFF: ("Main", "g", 0),
@@ -64,7 +69,20 @@ COMMAND_TARGETS = {
 }
 ALLOWED_COMMANDS = frozenset(COMMAND_TARGETS) | {CMD_UPDATE_CHECK}
 
-SALT_STATUS = {0: "ok", 1: "low"}
+SALT_STATUS = {0: "low", 1: "ok", 2: "high", 3: "shutdown", 4: "unknown"}
 
 CONF_UID = "uid"
 CONF_DEVICE_ID = "device_id"
+
+# Connection modes. Entries created before local mode existed have no
+# CONF_CONNECTION and are cloud.
+CONF_CONNECTION = "connection"
+CONNECTION_CLOUD = "cloud"
+CONNECTION_LOCAL = "local"
+CONF_TOKEN = "token"
+DEFAULT_LOCAL_PORT = 8080
+
+LOCAL_FALLBACK_INTERVAL = timedelta(seconds=60)
+"""Poll this often in local mode as a backstop to the event stream."""
+
+LOCAL_NETWORK_INTERVAL = timedelta(minutes=5)

@@ -17,7 +17,7 @@ from homeassistant.const import EntityCategory, PERCENTAGE
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from . import SmarterSpaConfigEntry
+from . import SmarterSpaConfigEntry, is_local, local_entities
 from .api import parse_boot_time
 from .const import SALT_STATUS
 from .coordinator import SmarterSpaCoordinator
@@ -108,6 +108,9 @@ async def async_setup_entry(
     hass: HomeAssistant, entry: SmarterSpaConfigEntry, async_add_entities: AddEntitiesCallback
 ) -> None:
     coordinator = entry.runtime_data
+    if is_local(entry):
+        async_add_entities(local_entities.LocalSensor(coordinator, d) for d in local_entities.SENSORS)
+        return
     async_add_entities(SmarterSpaSensor(coordinator, d) for d in SENSORS)
 
 
