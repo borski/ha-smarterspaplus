@@ -207,6 +207,16 @@
       "internet": {
         "name": "Internet"
       }
+    },
+    "select": {
+      "polarity": {
+        "name": "Cell polarity",
+        "state": {
+          "alternate": "Alternate (self-cleaning)",
+          "normal": "Normal only",
+          "reversed": "Reversed only"
+        }
+      }
     }
   }
 }

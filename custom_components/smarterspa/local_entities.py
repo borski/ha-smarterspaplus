@@ -20,6 +20,7 @@ from homeassistant.components.binary_sensor import (
 )
 from homeassistant.components.button import ButtonDeviceClass, ButtonEntity, ButtonEntityDescription
 from homeassistant.components.number import NumberEntity, NumberEntityDescription, NumberMode
+from homeassistant.components.select import SelectEntity, SelectEntityDescription
 from homeassistant.components.sensor import (
     SensorDeviceClass,
     SensorEntity,
@@ -339,3 +340,30 @@ class LocalButton(SmarterSpaEntity, ButtonEntity):
 
     async def async_press(self) -> None:
         await self.coordinator.async_run(self.entity_description.action)
+
+
+POLARITY_OPTIONS = ["alternate", "normal", "reversed"]
+
+
+class LocalPolaritySelect(SmarterSpaEntity, SelectEntity):
+    """Cell polarity. Alternate sheds scale. Fixed is for a unit where one direction has failed."""
+
+    coordinator: SmarterSpaLocalCoordinator
+    entity_description = SelectEntityDescription(
+        key="polarity",
+        translation_key="polarity",
+        icon="mdi:swap-horizontal",
+        entity_category=EntityCategory.CONFIG,
+        options=POLARITY_OPTIONS,
+    )
+
+    def __init__(self, coordinator: SmarterSpaLocalCoordinator) -> None:
+        super().__init__(coordinator, "polarity")
+
+    @property
+    def current_option(self) -> str | None:
+        value = (self.coordinator.data or {}).get("polarity")
+        return value if value in POLARITY_OPTIONS else None
+
+    async def async_select_option(self, option: str) -> None:
+        await self.coordinator.async_run("update_settings", polarity=option)

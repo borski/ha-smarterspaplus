@@ -17,7 +17,7 @@ from .local_api import LocalClient
 from .local_coordinator import SmarterSpaLocalCoordinator
 
 CLOUD_PLATFORMS: list[Platform] = [Platform.SENSOR, Platform.SWITCH, Platform.NUMBER, Platform.BUTTON]
-LOCAL_PLATFORMS: list[Platform] = [*CLOUD_PLATFORMS, Platform.BINARY_SENSOR]
+LOCAL_PLATFORMS: list[Platform] = [*CLOUD_PLATFORMS, Platform.BINARY_SENSOR, Platform.SELECT]
 
 SmarterSpaConfigEntry = ConfigEntry[Any]
 

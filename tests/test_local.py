@@ -119,6 +119,13 @@ async def test_commands_reach_the_controller(hass: HomeAssistant, controller: Co
     )
     assert engine.settings.target_margin == 8
 
+    assert hass.states.get("select.smarterspa_cell_polarity").state == "alternate"
+    await hass.services.async_call(
+        "select", "select_option",
+        {"entity_id": "select.smarterspa_cell_polarity", "option": "reversed"}, blocking=True,
+    )
+    assert engine.settings.polarity.value == "reversed"
+
     engine.electrode_seconds = 10_000_000
     await hass.services.async_call(
         "button", "press", {"entity_id": "button.smarterspa_reset_electrode_life"}, blocking=True
