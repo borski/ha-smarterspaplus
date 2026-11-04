@@ -62,6 +62,8 @@ async def test_entities_and_values(hass: HomeAssistant, controller: Controller) 
     assert hass.states.get("sensor.smarterspa_salt_status").state == "unknown"
     assert hass.states.get("sensor.smarterspa_electrode_life_remaining").state == "100"
     assert hass.states.get("sensor.smarterspa_board_temperature") is None
+    assert hass.states.get("sensor.smarterspa_chlorine_sensor").attributes["unit_of_measurement"] == "mV"
+    assert hass.states.get("number.smarterspa_zero_point").attributes["unit_of_measurement"] == "mV"
     assert hass.states.get("switch.smarterspa_measured_dosing").state == "off"
     assert hass.states.get("sensor.smarterspa_electrode_current").state == "unknown"
     assert hass.states.get("sensor.smarterspa_cycle_phase").state == "idle"

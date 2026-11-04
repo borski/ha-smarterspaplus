@@ -33,6 +33,7 @@ from homeassistant.const import (
     SIGNAL_STRENGTH_DECIBELS_MILLIWATT,
     EntityCategory,
     UnitOfElectricCurrent,
+    UnitOfElectricPotential,
     UnitOfTime,
 )
 from homeassistant.exceptions import HomeAssistantError
@@ -40,6 +41,9 @@ from homeassistant.util import dt as dt_util
 
 from .entity import SmarterSpaEntity
 from .local_coordinator import SmarterSpaLocalCoordinator
+
+# The manual calls the sensor reading and the zero point millivolts.
+MILLIVOLT = UnitOfElectricPotential.MILLIVOLT
 
 SALT_OPTIONS = ["low", "ok", "high", "shutdown", "unknown"]
 PHASE_OPTIONS = ["starting", "switching", "settling", "generating", "sampling", "idle", "fault"]
@@ -110,14 +114,17 @@ SENSORS: tuple[LocalSensorDescription, ...] = (
     ),
     LocalSensorDescription(
         key="chlorine_sensor", translation_key="chlorine_sensor", icon="mdi:flask-outline",
+        native_unit_of_measurement=MILLIVOLT,
         state_class=SensorStateClass.MEASUREMENT, value_fn=_get("sensor"),
     ),
     LocalSensorDescription(
         key="last_check", translation_key="last_check", icon="mdi:flask-round-bottom-outline",
+        native_unit_of_measurement=MILLIVOLT,
         state_class=SensorStateClass.MEASUREMENT, value_fn=_get("last_check"),
     ),
     LocalSensorDescription(
         key="target_point", translation_key="target_point", icon="mdi:arrow-collapse-up",
+        native_unit_of_measurement=MILLIVOLT,
         entity_category=EntityCategory.DIAGNOSTIC, value_fn=_get("target_point"),
     ),
     LocalSensorDescription(
@@ -284,11 +291,13 @@ NUMBERS: tuple[LocalNumberDescription, ...] = (
     LocalNumberDescription(
         key="zero_point", translation_key="zero_point_control", icon="mdi:target",
         native_min_value=10, native_max_value=150, native_step=1, mode=NumberMode.SLIDER,
+        native_unit_of_measurement=MILLIVOLT,
         entity_category=EntityCategory.CONFIG, field="zero_point",
     ),
     LocalNumberDescription(
         key="target_margin", translation_key="target_margin", icon="mdi:arrow-expand-up",
         native_min_value=1, native_max_value=60, native_step=1, mode=NumberMode.BOX,
+        native_unit_of_measurement=MILLIVOLT,
         entity_category=EntityCategory.CONFIG, field="target_margin",
     ),
 )
